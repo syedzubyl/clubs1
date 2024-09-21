@@ -1,28 +1,28 @@
-{
-  "flutter": {
-    "platforms": {
-      "dart": {
-        "lib/firebase_options.dart": {
-          "projectId": "clubs-database-92420",
-          "configurations": {
-            "web": "1:1062885585306:web:9c637b422a3da2e4de4a23"
+  {
+    "flutter": {
+      "platforms": {
+        "dart": {
+          "lib/firebase_options.dart": {
+            "projectId": "clubs-database-92420",
+            "configurations": {
+              "web": "1:1062885585306:web:9c637b422a3da2e4de4a23"
+            }
           }
         }
       }
+    },
+    "hosting": {
+      "public": "build/web",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
     }
-  },
-  "hosting": {
-    "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
   }
-}

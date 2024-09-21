@@ -1,5 +1,8 @@
 {
   "projects": {
     "default": "clubs-database-92420"
-  }
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

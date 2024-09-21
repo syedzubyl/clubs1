@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart'; // Import the generated file
+import 'package:url_launcher/url_launcher.dart'; // Add this import for URL launching
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,34 +35,51 @@ class _ClubRegistrationPageState extends State<ClubRegistrationPage> {
   final _nameController = TextEditingController();
   final _discordUsernameController = TextEditingController();
 
+  List<String> selectedClubs = [];
+  String? selectedBatch;
+  List<String> yearOfStudy = ["1st Year", "2nd Year"];
+  String? selectedYear;
+
   final List<String> clubs = [
     "Coding Clubs",
     "Corporate Connect Clubs",
     "Digital Marketing Clubs"
   ];
 
-  List<String> selectedClubs = [];
-
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      // Check if year of study and batch are selected
+      if (selectedYear == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select your year of study.')),
+        );
+        return;
+      }
+      if (selectedBatch == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select your batch.')),
+        );
+        return;
+      }
+
       try {
-        // Create a reference to the Firestore collection
         CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-        // Add the form data to the Firestore collection
         await users.add({
           'name': _nameController.text,
           'discordUsername': _discordUsernameController.text,
           'selectedClubs': selectedClubs,
+          'yearOfStudy': selectedYear,
+          'batch': selectedBatch,
         });
 
-        // Log success message to console
         print('Data added successfully: '
             'Name: ${_nameController.text}, '
             'Discord Username: ${_discordUsernameController.text}, '
-            'Selected Clubs: ${selectedClubs.join(', ')}');
+            'Selected Clubs: ${selectedClubs.join(', ')}, '
+            'Year of Study: $selectedYear, '
+            'Batch: $selectedBatch');
 
-        // Show a success message
         showDialog(
           context: context,
           builder: (context) {
@@ -70,7 +88,9 @@ class _ClubRegistrationPageState extends State<ClubRegistrationPage> {
               content: Text(
                 'Name: ${_nameController.text}\n'
                     'Discord Username: ${_discordUsernameController.text}\n'
-                    'Selected Clubs: ${selectedClubs.join(', ')}',
+                    'Selected Clubs: ${selectedClubs.join(', ')}\n'
+                    'Year of Study: $selectedYear\n'
+                    'Batch: $selectedBatch',
               ),
               actions: [
                 TextButton(
@@ -84,10 +104,7 @@ class _ClubRegistrationPageState extends State<ClubRegistrationPage> {
           },
         );
       } catch (e) {
-        // Log error message to console
         print('Error occurred: ${e.toString()}');
-
-        // Show an error message if something goes wrong
         showDialog(
           context: context,
           builder: (context) {
@@ -106,6 +123,16 @@ class _ClubRegistrationPageState extends State<ClubRegistrationPage> {
           },
         );
       }
+    }
+  }
+
+  // Method to launch GitHub profile
+  void _launchURL() async {
+    const url = 'https://github.com/syedzubyl';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -165,6 +192,45 @@ class _ClubRegistrationPageState extends State<ClubRegistrationPage> {
                   );
                 }).toList(),
                 SizedBox(height: 20),
+                Text(
+                  'Select Year of Study:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Column(
+                  children: yearOfStudy.map((year) {
+                    return RadioListTile<String>(
+                      title: Text(year),
+                      value: year,
+                      groupValue: selectedYear,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedYear = value;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Select Batch:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                DropdownButton<String>(
+                  hint: Text('Select Batch'),
+                  value: selectedBatch,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedBatch = newValue;
+                    });
+                  },
+                  items: <String>['A', 'B', 'C', 'D'].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
                     onPressed: _submitForm,
@@ -175,6 +241,11 @@ class _ClubRegistrationPageState extends State<ClubRegistrationPage> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _launchURL,
+        child: Text('Find Me'),
+        tooltip: 'Visit my GitHub',
       ),
     );
   }
