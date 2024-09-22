@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Club Registration',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -141,6 +142,28 @@ class _ClubRegistrationPageState extends State<ClubRegistrationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Club Registration'),
+        actions: [
+          Flexible(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: _launchURL,
+                  icon: Image.asset(
+                    'assets/github_logo.jpeg',
+                    width: 24,
+                    height: 24,
+                  ),
+                  tooltip: 'Find Me on GitHub',
+                ),
+                Text(
+                  'Find Me     .',
+                  style: TextStyle(fontSize: 12, color: Colors.black),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -241,11 +264,6 @@ class _ClubRegistrationPageState extends State<ClubRegistrationPage> {
             ),
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _launchURL,
-        child: Text('Find Me'),
-        tooltip: 'Visit my GitHub',
       ),
     );
   }
